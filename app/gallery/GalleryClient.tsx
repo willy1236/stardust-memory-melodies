@@ -4,6 +4,20 @@ import Link from "next/link";
 import { useState } from "react";
 import { Aperture, Search, User, Moon, Sparkles } from "lucide-react";
 
+function truncateAtSecondHeading(text: string): string {
+  const lines = text.split('\n');
+  let headingCount = 0;
+  let start = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^#{1,6}\s/.test(lines[i])) {
+      headingCount++;
+      if (headingCount === 1) { start = i + 1; continue; }
+      if (headingCount === 2) return lines.slice(start, i).join('\n').trim();
+    }
+  }
+  return lines.slice(start).join('\n').trim();
+}
+
 export default function GalleryClient({ data }: { data: any }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -107,8 +121,8 @@ export default function GalleryClient({ data }: { data: any }) {
                   <h3 className="text-white text-lg font-light tracking-widest">
                     {item.name}
                   </h3>
-                  <p className="text-slate-600 text-xs italic">
-                    {item.description}
+                  <p className="text-slate-600 text-xs italic whitespace-pre-line">
+                    {truncateAtSecondHeading(item.description)}
                   </p>
                 </div>
               </Link>

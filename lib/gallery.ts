@@ -21,7 +21,7 @@ export async function getGalleryData(): Promise<GalleryData> {
   }
 
   // Read descriptions from data.json
-  let descriptions: { categories?: Record<string, any>, subCategories?: Record<string, string>, series?: Record<string, string> } = {};
+  let descriptions: { categories?: Record<string, any>, subCategories?: Record<string, string>, series?: Record<string, { story?: string; date?: string; location?: string } | string> } = {};
   try {
     const dataJsonPath = path.join(galleryDir, 'data.json');
     const fileContents = await fs.readFile(dataJsonPath, 'utf8');
@@ -108,6 +108,8 @@ export async function getGalleryData(): Promise<GalleryData> {
             const globalSeriesId = `${globalSubCatId}-${seriesId}`;
 
             if (!seriesMap[globalSeriesId]) {
+              const seriesDesc = descriptions.series?.[globalSeriesId];
+              const seriesMeta = typeof seriesDesc === 'object' ? seriesDesc : undefined;
               seriesMap[globalSeriesId] = {
                 id: globalSeriesId, // For routing
                 categoryId: catId,
@@ -116,9 +118,9 @@ export async function getGalleryData(): Promise<GalleryData> {
                 seriesId: seriesId, // Simple number
                 title: `${subCatName}`,
                 subtitle: `Series ${seriesId}`,
-                story: descriptions.series?.[globalSeriesId] || "", // Only from data.json
-                date: date,
-                location: "Unknown",
+                story: (typeof seriesDesc === 'string' ? seriesDesc : seriesMeta?.story) || "",
+                date: seriesMeta?.date || date,
+                location: seriesMeta?.location || "Unknown",
                 coverImage: `/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`,
                 images: []
               };
