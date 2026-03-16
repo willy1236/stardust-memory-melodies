@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ChevronLeft, Play, Pause, ChevronRight, Clock, MapPin, Fingerprint } from "lucide-react";
 import Markdown from "react-markdown";
 
-export default function SequenceViewer({ sequence }: { sequence: any }) {
+export default function SequenceViewer({ sequence, prevId, nextId }: { sequence: any; prevId: string | null; nextId: string | null }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  
+
   const images = sequence.images && sequence.images.length > 0 ? sequence.images : [sequence.coverImage];
 
   useEffect(() => {
@@ -28,30 +29,52 @@ export default function SequenceViewer({ sequence }: { sequence: any }) {
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 max-w-7xl mx-auto w-full">
       {/* Hero Image Section */}
-      <div className="w-full max-w-4xl">
-        <div className="relative group">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-800 shadow-2xl">
-            <Image
-              src={images[currentIndex]}
-              alt={`${sequence.title} - ${currentIndex + 1}`}
-              fill
-              className="object-cover opacity-80 transition-opacity duration-500"
-              referrerPolicy="no-referrer"
-            />
-          </div>
+      <div className="w-full max-w-6xl flex items-center gap-4">
+        <div className="flex-none w-10 flex justify-center">
+          {prevId ? (
+            <Link href={`/sequence/${prevId}`} className="p-2 text-slate-600 hover:text-white transition-colors">
+              <ChevronLeft className="w-8 h-8" />
+            </Link>
+          ) : (
+            <div className="w-12" />
+          )}
+        </div>
 
-          {/* Controls */}
-          <div className="absolute inset-x-0 bottom-4 flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <button onClick={prevImage} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-zinc-700 hover:border-[#e2e8f0] transition-colors">
-              <ChevronLeft className="w-6 h-6 text-[#e2e8f0]" />
-            </button>
-            <button onClick={togglePlay} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-zinc-700 hover:border-[#e2e8f0] transition-colors">
-              {isPlaying ? <Pause className="w-6 h-6 text-[#e2e8f0]" /> : <Play className="w-6 h-6 text-[#e2e8f0]" />}
-            </button>
-            <button onClick={nextImage} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-zinc-700 hover:border-[#e2e8f0] transition-colors">
-              <ChevronRight className="w-6 h-6 text-[#e2e8f0]" />
-            </button>
+        <div className="flex-1">
+          <div className="relative group">
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-800 shadow-2xl">
+              <Image
+                src={images[currentIndex]}
+                alt={`${sequence.title} - ${currentIndex + 1}`}
+                fill
+                className="object-cover opacity-80 transition-opacity duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+
+            {/* Controls */}
+            <div className="absolute inset-x-0 bottom-4 flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <button onClick={prevImage} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-zinc-700 hover:border-[#e2e8f0] transition-colors">
+                <ChevronLeft className="w-6 h-6 text-[#e2e8f0]" />
+              </button>
+              <button onClick={togglePlay} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-zinc-700 hover:border-[#e2e8f0] transition-colors">
+                {isPlaying ? <Pause className="w-6 h-6 text-[#e2e8f0]" /> : <Play className="w-6 h-6 text-[#e2e8f0]" />}
+              </button>
+              <button onClick={nextImage} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-zinc-700 hover:border-[#e2e8f0] transition-colors">
+                <ChevronRight className="w-6 h-6 text-[#e2e8f0]" />
+              </button>
+            </div>
           </div>
+        </div>
+
+        <div className="flex-none w-10 flex justify-center">
+          {nextId ? (
+            <Link href={`/sequence/${nextId}`} className="p-2 text-slate-600 hover:text-white transition-colors">
+              <ChevronRight className="w-8 h-8" />
+            </Link>
+          ) : (
+            <div className="w-12" />
+          )}
         </div>
       </div>
 
@@ -61,7 +84,7 @@ export default function SequenceViewer({ sequence }: { sequence: any }) {
           {sequence.title}
         </h3>
         {sequence.story && (
-          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-left [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
+          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
             <Markdown>{sequence.story}</Markdown>
           </div>
         )}

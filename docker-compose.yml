@@ -1,0 +1,10 @@
+services:
+  stardust:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./public/gallery:/app/public/gallery
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

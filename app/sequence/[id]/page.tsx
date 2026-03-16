@@ -11,11 +11,16 @@ export default async function SequencePage({
 }) {
   const { id } = await params;
   const data = await getGalleryData();
-  const sequence = data.series.find((s: any) => s.id === id);
+  const seriesList = data.series;
+  const currentIndex = seriesList.findIndex((s: any) => s.id === id);
+  const sequence = seriesList[currentIndex];
 
   if (!sequence) {
     notFound();
   }
+
+  const prevId = currentIndex > 0 ? seriesList[currentIndex - 1].id : null;
+  const nextId = currentIndex < seriesList.length - 1 ? seriesList[currentIndex + 1].id : null;
 
   return (
     <div
@@ -48,7 +53,7 @@ export default async function SequencePage({
       </header>
 
       {/* Main Content with Carousel */}
-      <SequenceViewer sequence={sequence} />
+      <SequenceViewer sequence={sequence} prevId={prevId} nextId={nextId} />
     </div>
   );
 }

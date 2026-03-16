@@ -1,0 +1,43 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci-checks:
+    name: Run Type Check & Build (CI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  build-and-deploy:
+    runs-on: self-hosted
+    needs: ci-checks
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build and Restart Docker Compose Service
+        run: |
+          echo "Running docker compose command to rebuild and deploy..."
+          docker compose -f docker-compose.yml up -d --build stardust
+          echo "Deployment completed."
+
+      - name: Prune old Docker images
+        if: always()
+        run: |
+          docker image prune -f
