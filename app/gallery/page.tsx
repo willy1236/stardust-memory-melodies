@@ -1,59 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Aperture, Search, User, Moon, Star, Sparkles } from "lucide-react";
+import { promises as fs } from 'fs';
+import path from 'path';
 
-const galleryItems = [
-  {
-    id: "1-1-101",
-    series: "Series 01",
-    title: "冬日碎片",
-    subtitle: "Winter Fragments, 2025",
-    image: "https://picsum.photos/seed/winter/800/1000",
-    className: "",
-  },
-  {
-    id: "1-2-102",
-    series: "Series 02",
-    title: "寂靜之聲",
-    subtitle: "Sound of Silence, 2024",
-    image: "https://picsum.photos/seed/silence/800/1000",
-    className: "mt-12 md:mt-24",
-  },
-  {
-    id: "1-3-103",
-    series: "Series 03",
-    title: "光影流轉",
-    subtitle: "Flowing Shadows, 2024",
-    image: "https://picsum.photos/seed/shadows/800/1000",
-    className: "",
-  },
-  {
-    id: "1-4-104",
-    series: "Series 04",
-    title: "塵封往事",
-    subtitle: "Dusty Memories, 2024",
-    image: "https://picsum.photos/seed/dusty/800/1000",
-    className: "md:-mt-12 lg:-mt-24",
-  },
-  {
-    id: "1-5-105",
-    series: "Series 05",
-    title: "破曉時刻",
-    subtitle: "Dawn Breaking, 2025",
-    image: "https://picsum.photos/seed/dawn/800/1000",
-    className: "",
-  },
-  {
-    id: "1-6-106",
-    series: "Series 06",
-    title: "無盡夏日",
-    subtitle: "Endless Summer, 2024",
-    image: "https://picsum.photos/seed/summer/800/1000",
-    className: "mt-12 md:mt-0",
-  },
-];
+async function getGalleryData() {
+  const filePath = path.join(process.cwd(), 'public', 'gallery', 'data.json');
+  const fileContents = await fs.readFile(filePath, 'utf8');
+  return JSON.parse(fileContents);
+}
 
-export default function Gallery() {
+export default async function Gallery() {
+  const data = await getGalleryData();
+  const galleryItems = data.series;
+
+  const getStaggerClass = (index: number) => {
+    const pos = index % 3;
+    if (pos === 0) return '';
+    if (pos === 1) return 'mt-12 md:mt-24';
+    if (pos === 2) return 'md:-mt-12 lg:-mt-24';
+    return '';
+  };
+
   return (
     <div
       className="relative flex h-auto min-h-screen w-full flex-col bg-black"
@@ -116,15 +84,15 @@ export default function Gallery() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
-            {galleryItems.map((item) => (
+            {galleryItems.map((item: any, index: number) => (
               <Link
                 href={`/sequence/${item.id}`}
                 key={item.id}
-                className={`flex flex-col gap-6 group ${item.className}`}
+                className={`flex flex-col gap-6 group ${getStaggerClass(index)}`}
               >
                 <div className="relative aspect-[4/5] w-full grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out cursor-crosshair shadow-[0_0_15px_rgba(255,255,255,0.03)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] border border-white/5">
                   <Image
-                    src={item.image}
+                    src={item.coverImage}
                     alt={item.title}
                     fill
                     className="object-cover"
@@ -133,7 +101,7 @@ export default function Gallery() {
                 </div>
                 <div className="flex flex-col gap-1 px-2">
                   <p className="text-[#C0C0C0]/80 text-xs tracking-[0.3em] uppercase font-light">
-                    {item.series}
+                    Series {item.seriesId}
                   </p>
                   <h3 className="text-white text-lg font-light tracking-widest">
                     {item.title}

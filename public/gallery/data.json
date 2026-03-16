@@ -1,0 +1,122 @@
+{
+  "categories": {
+    "1": {
+      "name": "大型活動",
+      "nameEn": "Grand Events"
+    },
+    "2": {
+      "name": "日常互動",
+      "nameEn": "Daily Interactions"
+    }
+  },
+  "subCategories": {
+    "1-1": {
+      "categoryId": "1",
+      "name": "2025 年會",
+      "description": "年度盛事，星光熠熠的夜晚。"
+    },
+    "1-2": {
+      "categoryId": "1",
+      "name": "線上聚會",
+      "description": "跨越時空的雲端相聚。"
+    }
+  },
+  "series": [
+    {
+      "id": "1-1-101",
+      "categoryId": "1",
+      "subCategoryId": "1-1",
+      "seriesId": "101",
+      "title": "冬日碎片",
+      "subtitle": "Winter Fragments, 2025",
+      "story": "在永恆的沈默中，碎片拼湊出遺忘的真相。\n每一道光影都承載著一段不曾言說的往事，\n我們在虛空的邊際徘徊，只為尋回那一抹消失的晨曦。",
+      "date": "2025-12-01",
+      "location": "虛空邊緣 / 座標隱匿",
+      "coverImage": "https://picsum.photos/seed/winter/800/1000",
+      "images": [
+        "https://picsum.photos/seed/seq1/1920/1080",
+        "https://picsum.photos/seed/seq2/1920/1080",
+        "https://picsum.photos/seed/seq3/1920/1080",
+        "https://picsum.photos/seed/seq4/1920/1080",
+        "https://picsum.photos/seed/seq5/1920/1080",
+        "https://picsum.photos/seed/seq6/1920/1080"
+      ]
+    },
+    {
+      "id": "1-2-102",
+      "categoryId": "1",
+      "subCategoryId": "1-2",
+      "seriesId": "102",
+      "title": "寂靜之聲",
+      "subtitle": "Sound of Silence, 2024",
+      "story": "寂靜中迴盪的微弱聲響，是星塵間最溫柔的共鳴。",
+      "date": "2024-11-15",
+      "location": "寂靜軌道",
+      "coverImage": "https://picsum.photos/seed/silence/800/1000",
+      "images": [
+        "https://picsum.photos/seed/sequence-main2/1920/1080",
+        "https://picsum.photos/seed/seq2-2/1920/1080"
+      ]
+    },
+    {
+      "id": "1-3-103",
+      "categoryId": "1",
+      "subCategoryId": "1-3",
+      "seriesId": "103",
+      "title": "光影流轉",
+      "subtitle": "Flowing Shadows, 2024",
+      "story": "光與影的交織，記錄著時間流逝的痕跡。",
+      "date": "2024-08-22",
+      "location": "星雲深處",
+      "coverImage": "https://picsum.photos/seed/shadows/800/1000",
+      "images": [
+        "https://picsum.photos/seed/sequence-main3/1920/1080"
+      ]
+    },
+    {
+      "id": "1-4-104",
+      "categoryId": "1",
+      "subCategoryId": "1-4",
+      "seriesId": "104",
+      "title": "塵封往事",
+      "subtitle": "Dusty Memories, 2024",
+      "story": "那些被遺忘在角落的記憶，重新閃爍著微光。",
+      "date": "2024-05-10",
+      "location": "記憶斷層",
+      "coverImage": "https://picsum.photos/seed/dusty/800/1000",
+      "images": [
+        "https://picsum.photos/seed/sequence-main4/1920/1080"
+      ]
+    },
+    {
+      "id": "1-5-105",
+      "categoryId": "1",
+      "subCategoryId": "1-5",
+      "seriesId": "105",
+      "title": "破曉時刻",
+      "subtitle": "Dawn Breaking, 2025",
+      "story": "當第一縷光線穿透黑暗，新的故事就此展開。",
+      "date": "2025-01-01",
+      "location": "晨曦之境",
+      "coverImage": "https://picsum.photos/seed/dawn/800/1000",
+      "images": [
+        "https://picsum.photos/seed/sequence-main5/1920/1080"
+      ]
+    },
+    {
+      "id": "1-6-106",
+      "categoryId": "1",
+      "subCategoryId": "1-6",
+      "seriesId": "106",
+      "title": "無盡夏日",
+      "subtitle": "Endless Summer, 2024",
+      "story": "彷彿永遠不會結束的夏日，充滿了歡笑與汗水。",
+      "date": "2024-07-15",
+      "location": "夏日星系",
+      "coverImage": "https://picsum.photos/seed/summer/800/1000",
+      "images": [
+        "https://picsum.photos/seed/sequence-main6/1920/1080"
+      ]
+    }
+  ]
+}

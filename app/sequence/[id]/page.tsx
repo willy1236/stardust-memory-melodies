@@ -1,5 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { promises as fs } from 'fs';
+import path from 'path';
 import {
   Aperture,
   Share2,
@@ -12,20 +15,27 @@ import {
   Fingerprint,
 } from "lucide-react";
 
+async function getGalleryData() {
+  const filePath = path.join(process.cwd(), 'public', 'gallery', 'data.json');
+  const fileContents = await fs.readFile(filePath, 'utf8');
+  return JSON.parse(fileContents);
+}
+
 export default async function SequencePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const thumbnails = [
-    "https://picsum.photos/seed/seq1/200/200",
-    "https://picsum.photos/seed/seq2/200/200",
-    "https://picsum.photos/seed/seq3/200/200",
-    "https://picsum.photos/seed/seq4/200/200",
-    "https://picsum.photos/seed/seq5/200/200",
-    "https://picsum.photos/seed/seq6/200/200",
-  ];
+  const data = await getGalleryData();
+  const sequence = data.series.find((s: any) => s.id === id);
+
+  if (!sequence) {
+    notFound();
+  }
+
+  const thumbnails = sequence.images;
+  const mainImage = thumbnails[0] || sequence.coverImage;
 
   return (
     <div
@@ -64,8 +74,8 @@ export default async function SequencePage({
           <div className="relative group">
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-800 shadow-2xl">
               <Image
-                src="https://picsum.photos/seed/sequence-main/1920/1080"
-                alt="Abstract ethereal light fragments in dark space"
+                src={mainImage}
+                alt={sequence.title}
                 fill
                 className="object-cover opacity-80"
                 referrerPolicy="no-referrer"
@@ -90,14 +100,10 @@ export default async function SequencePage({
         {/* Text Content */}
         <div className="mt-16 mb-20 max-w-2xl w-full text-center">
           <h3 className="text-[#e2e8f0] tracking-[0.5em] text-xl font-light leading-loose uppercase mb-8">
-            故事背景
+            {sequence.title}
           </h3>
-          <p className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70">
-            在永恆的沈默中，碎片拼湊出遺忘的真相。
-            <br />
-            每一道光影都承載著一段不曾言說的往事，
-            <br />
-            我們在虛空的邊際徘徊，只為尋回那一抹消失的晨曦。
+          <p className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line">
+            {sequence.story}
           </p>
         </div>
 
@@ -111,7 +117,7 @@ export default async function SequencePage({
               </span>
             </div>
             <span className="text-[#e2e8f0] text-xs tracking-widest">
-              未知年代 / 00:00:00
+              {sequence.date}
             </span>
           </div>
           <div className="flex items-center justify-between border-b pb-3 celestial-line border-opacity-30 border-zinc-500/20">
@@ -122,7 +128,7 @@ export default async function SequencePage({
               </span>
             </div>
             <span className="text-[#e2e8f0] text-xs tracking-widest">
-              虛空邊緣 / 座標隱匿
+              {sequence.location}
             </span>
           </div>
           <div className="flex items-center justify-between border-b pb-3 celestial-line border-opacity-30 border-zinc-500/20">
@@ -133,7 +139,7 @@ export default async function SequencePage({
               </span>
             </div>
             <span className="text-[#e2e8f0] text-xs tracking-widest font-mono">
-              SEQ-MS-0010-B
+              SEQ-MS-{sequence.seriesId}
             </span>
           </div>
         </div>
@@ -147,11 +153,11 @@ export default async function SequencePage({
               關聯片段 / Associated Segments
             </span>
             <span className="text-slate-500 text-[10px] tracking-widest">
-              01 / 12
+              01 / {thumbnails.length < 10 ? `0${thumbnails.length}` : thumbnails.length}
             </span>
           </div>
           <div className="flex gap-4 overflow-x-auto hide-scrollbar">
-            {thumbnails.map((src, index) => (
+            {thumbnails.map((src: string, index: number) => (
               <div
                 key={index}
                 className={`flex-none w-24 aspect-square border p-1 transition-all cursor-pointer ${
