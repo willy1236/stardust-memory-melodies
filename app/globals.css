@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-background-light: #f7f7f7;
+  --color-background-dark: #000000;
+  --color-silver: #C0C0C0;
+  --color-starlight: #e2e8f0;
+  
+  --font-display: "Inter", "Noto Sans TC", sans-serif;
+
+  --animate-pulse-slow: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-pulse-slower: pulse-slower 12s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes pulse-slower {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.3; }
+  }
+}
+
+@layer utilities {
+  .tracking-widest-extra {
+    letter-spacing: 0.5em;
+  }
+  .nebula-mask {
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  .star-map-line {
+    @apply h-[1px] relative;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  }
+  .star-map-line::before, .star-map-line::after {
+    content: '';
+    @apply absolute top-[-2px] w-[5px] h-[5px] border border-white/30 rounded-full;
+  }
+  .star-map-line::before { left: 25%; }
+  .star-map-line::after { right: 25%; }
+
+  .celestial-line {
+    @apply relative;
+  }
+  .celestial-line::before, .celestial-line::after {
+    content: '+';
+    @apply absolute bottom-[-6px] text-[8px] text-slate-400/30 font-mono;
+  }
+  .celestial-line::before { left: -10px; }
+  .celestial-line::after { right: -10px; }
+}
