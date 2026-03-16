@@ -31,8 +31,9 @@ export async function getGalleryData(): Promise<GalleryData> {
   }
 
   try {
-    const level1Entries = await fs.readdir(galleryDir, { withFileTypes: true });
-    
+    const level1Entries = (await fs.readdir(galleryDir, { withFileTypes: true }))
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
     for (const l1 of level1Entries) {
       if (!l1.isDirectory()) continue;
       
@@ -52,7 +53,8 @@ export async function getGalleryData(): Promise<GalleryData> {
       };
       
       const l1Path = path.join(galleryDir, l1.name);
-      const level2Entries = await fs.readdir(l1Path, { withFileTypes: true });
+      const level2Entries = (await fs.readdir(l1Path, { withFileTypes: true }))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
       
       for (const l2 of level2Entries) {
         if (!l2.isDirectory()) continue;
@@ -77,7 +79,8 @@ export async function getGalleryData(): Promise<GalleryData> {
         };
         
         const l2Path = path.join(l1Path, l2.name);
-        const level3Entries = await fs.readdir(l2Path, { withFileTypes: true });
+        const level3Entries = (await fs.readdir(l2Path, { withFileTypes: true }))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
         
         const seriesMap: Record<string, any> = {};
         
@@ -131,7 +134,7 @@ export async function getGalleryData(): Promise<GalleryData> {
         }
         
         // Add all found series to the main array
-        for (const s of Object.values(seriesMap)) {
+        for (const s of Object.values(seriesMap).sort((a: any, b: any) => parseInt(a.seriesId) - parseInt(b.seriesId))) {
           if (s.images.length > 0) {
             series.push(s);
           }
