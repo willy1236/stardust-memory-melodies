@@ -1,14 +1,5 @@
 {
-  "categories": {
-    "1": {
-      "name": "大型活動",
-      "nameEn": "Grand Events"
-    },
-    "2": {
-      "name": "日常互動",
-      "nameEn": "Daily Interactions"
-    }
-  },
+  "categories": {},
   "subCategories": {
     "1-1": "年度盛事，星光熠熠的夜晚。\n\n- **地點**：虛空邊緣\n- **參與者**：全體成員",
     "1-2": "跨越時空的雲端相聚。\n\n### 活動亮點\n1. 經驗分享\n2. 未來展望",

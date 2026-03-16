@@ -5,3 +5,6 @@ coverage/
 *.log
 .env*
 !.env.example
+public/gallery/**/*.png
+public/gallery/**/*.jpg
+public/gallery/**/*.ini

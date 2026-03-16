@@ -108,6 +108,7 @@ export async function getGalleryData(): Promise<GalleryData> {
               seriesMap[globalSeriesId] = {
                 id: globalSeriesId, // For routing
                 categoryId: catId,
+                globalSubCatId: globalSubCatId,
                 subCategoryId: subCatId,
                 seriesId: seriesId, // Simple number
                 title: `${subCatName}`,
@@ -115,12 +116,12 @@ export async function getGalleryData(): Promise<GalleryData> {
                 story: descriptions.series?.[globalSeriesId] || "", // Only from data.json
                 date: date,
                 location: "Unknown",
-                coverImage: `/gallery/${l1.name}/${l2.name}/${fileName}`,
+                coverImage: `/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`,
                 images: []
               };
             }
 
-            seriesMap[globalSeriesId].images.push(`/gallery/${l1.name}/${l2.name}/${fileName}`);
+            seriesMap[globalSeriesId].images.push(`/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`);
             
             // Update date if we found a valid one and it was unknown
             if (seriesMap[globalSeriesId].date === 'Unknown' && date !== 'Unknown') {
