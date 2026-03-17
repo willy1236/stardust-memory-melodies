@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Aperture, Search, User, Moon, Sparkles } from "lucide-react";
+import { Aperture, Search, User, Moon, Sparkles, FileText } from "lucide-react";
 import { type GalleryData, type Category, type SubCategory, type Series } from "@/lib/gallery";
 
 type SubCategoryWithCover = SubCategory & { coverImage: string };
@@ -21,11 +21,24 @@ function truncateAtSecondHeading(text: string): string {
   return lines.slice(start).join('\n').trim();
 }
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/\[(.+?)\]\(.+?\)/g, '$1')
+    .replace(/^[-*>]\s+/gm, '')
+    .trim();
+}
+
 export default function GalleryClient({ data }: { data: GalleryData }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const categories: Category[] = Object.entries(data.categories).map(([id, cat]) => ({ ...cat, id }));
-  const subCategories: SubCategoryWithCover[] = Object.entries(data.subCategories).map(([id, subCat]) => {
+  const categories: Category[] = Object.entries(data.categories)
+    .map(([id, cat]) => ({ ...cat, id }))
+    .sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+  const allSubCategories: SubCategoryWithCover[] = Object.entries(data.subCategories).map(([id, subCat]) => {
     const firstSeries = data.series.find((s: Series) => s.globalSubCatId === id || s.subCategoryId === id);
     return {
       ...subCat,
@@ -35,8 +48,13 @@ export default function GalleryClient({ data }: { data: GalleryData }) {
   });
 
   const filteredSubCategories = activeCategory
-    ? subCategories.filter((sc) => sc.categoryId === activeCategory)
-    : subCategories;
+    ? allSubCategories.filter((sc) => sc.categoryId === activeCategory)
+    : allSubCategories;
+
+  const isTextCat = (categoryId: string) => data.categories[categoryId]?.type === 'text';
+
+  const textSubCategories = filteredSubCategories.filter(sc => isTextCat(sc.categoryId));
+  const imageSubCategories = filteredSubCategories.filter(sc => !isTextCat(sc.categoryId));
 
   const getStaggerClass = (index: number) => {
     const pos = index % 3;
@@ -101,37 +119,90 @@ export default function GalleryClient({ data }: { data: GalleryData }) {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
-            {filteredSubCategories.map((item: SubCategoryWithCover, index: number) => (
-              <Link
-                href={`/gallery/${item.id}`}
-                key={item.id}
-                className={`flex flex-col gap-6 group ${getStaggerClass(index)}`}
-              >
-                <div className="relative aspect-[4/5] w-full grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out cursor-crosshair shadow-[0_0_15px_rgba(255,255,255,0.03)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] border border-white/5">
-                  <Image
-                    src={item.coverImage}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                    referrerPolicy="no-referrer"
-                    loading={index < 12 ? "eager" : "lazy"}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 px-2">
-                  <p className="text-[#C0C0C0]/80 text-xs tracking-[0.3em] uppercase font-light">
-                    {categories.find(c => c.id === item.categoryId)?.nameEn || 'CATEGORY'}
+          {/* Text Category Section */}
+          {textSubCategories.length > 0 && (
+            <div className="mb-20">
+              {(!activeCategory || isTextCat(activeCategory)) && imageSubCategories.length > 0 && (
+                <div className="flex items-center gap-4 mb-10">
+                  <FileText className="w-4 h-4 text-slate-600" />
+                  <p className="text-slate-600 text-[10px] tracking-[0.5em] uppercase font-light">
+                    {data.categories[textSubCategories[0].categoryId]?.nameEn || 'EVENTS'}
                   </p>
-                  <h3 className="text-white text-lg font-light tracking-widest">
-                    {item.name}
-                  </h3>
-                  <p className="text-slate-600 text-xs italic whitespace-pre-line">
-                    {truncateAtSecondHeading(item.description)}
-                  </p>
+                  <div className="flex-1 border-t border-white/5" />
                 </div>
-              </Link>
-            ))}
-          </div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {textSubCategories.map((item: SubCategoryWithCover) => (
+                  <Link
+                    href={`/gallery/${item.id}`}
+                    key={item.id}
+                    className="group border border-white/8 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.05] p-8 transition-all duration-500 flex flex-col gap-4"
+                  >
+                    <p className="text-[#C0C0C0]/60 text-[10px] tracking-[0.4em] uppercase font-light">
+                      {categories.find(c => c.id === item.categoryId)?.nameEn || 'EVENTS'}
+                    </p>
+                    <h3 className="text-white text-lg font-light tracking-widest leading-snug">
+                      {item.name}
+                    </h3>
+                    <p className="text-slate-600 text-xs font-light leading-relaxed line-clamp-3 mt-auto">
+                      {stripMarkdown(truncateAtSecondHeading(item.description))}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="w-4 h-px bg-white/20 group-hover:w-8 transition-all duration-500" />
+                      <span className="text-slate-600 text-[10px] tracking-widest uppercase group-hover:text-slate-400 transition-colors">
+                        閱覽記錄
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Image Category Section */}
+          {imageSubCategories.length > 0 && (
+            <div>
+              {(!activeCategory || !isTextCat(activeCategory)) && textSubCategories.length > 0 && (
+                <div className="flex items-center gap-4 mb-10">
+                  <p className="text-slate-600 text-[10px] tracking-[0.5em] uppercase font-light">
+                    影像紀錄 / PHOTOS
+                  </p>
+                  <div className="flex-1 border-t border-white/5" />
+                </div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
+                {imageSubCategories.map((item: SubCategoryWithCover, index: number) => (
+                  <Link
+                    href={`/gallery/${item.id}`}
+                    key={item.id}
+                    className={`flex flex-col gap-6 group ${getStaggerClass(index)}`}
+                  >
+                    <div className="relative aspect-[4/5] w-full grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out cursor-crosshair shadow-[0_0_15px_rgba(255,255,255,0.03)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] border border-white/5">
+                      <Image
+                        src={item.coverImage}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        referrerPolicy="no-referrer"
+                        loading={index < 12 ? "eager" : "lazy"}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 px-2">
+                      <p className="text-[#C0C0C0]/80 text-xs tracking-[0.3em] uppercase font-light">
+                        {categories.find(c => c.id === item.categoryId)?.name || 'CATEGORY'}
+                      </p>
+                      <h3 className="text-white text-lg font-light tracking-widest">
+                        {item.name}
+                      </h3>
+                      <p className="text-slate-600 text-xs italic whitespace-pre-line">
+                        {truncateAtSecondHeading(item.description)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="mt-32 border-t border-white/5 pt-12 flex flex-col items-center">
             <p className="text-slate-700 text-[10px] tracking-[0.5em] uppercase font-light mb-4">

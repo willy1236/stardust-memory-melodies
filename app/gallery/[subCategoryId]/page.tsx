@@ -1,11 +1,17 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Aperture, ChevronLeft, Sparkles } from "lucide-react";
+import { Aperture, ChevronLeft, Sparkles, Clock, MapPin, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Markdown from "react-markdown";
 import { getGalleryData, type Series } from '@/lib/gallery';
 
 export const dynamic = 'force-dynamic';
+
+function formatDate(date: string): string {
+  if (date === 'Unknown') return '日期不明';
+  const d = date.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
+  return d.includes('-') ? date : d;
+}
 
 export default async function SubCategoryPage({
   params,
@@ -14,11 +20,14 @@ export default async function SubCategoryPage({
 }) {
   const { subCategoryId } = await params;
   const data = await getGalleryData();
-  
+
   const subCategory = data.subCategories[subCategoryId];
   if (!subCategory) {
     notFound();
   }
+
+  const parentCategory = data.categories[subCategory.categoryId];
+  const isTextCategory = parentCategory?.type === 'text';
 
   const seriesList = data.series.filter((s: Series) => s.globalSubCatId === subCategoryId || s.subCategoryId === subCategoryId);
 
@@ -61,34 +70,78 @@ export default async function SubCategoryPage({
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
-            {seriesList.map((item: Series, index: number) => (
-              <Link
-                href={`/sequence/${item.id}`}
-                key={item.id}
-                className={`flex flex-col gap-6 group ${getStaggerClass(index)}`}
-              >
-                <div className="relative aspect-[4/5] w-full grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out cursor-crosshair shadow-[0_0_15px_rgba(255,255,255,0.03)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] border border-white/5">
-                  <Image
-                    src={item.coverImage}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="flex flex-col gap-1 px-2">
-                  <p className="text-[#C0C0C0]/80 text-xs tracking-[0.3em] uppercase font-light">
-                    Series {item.seriesId}
-                  </p>
-                  <h3 className="text-white text-lg font-light tracking-widest">
-                    {item.title}
+          {isTextCategory ? (
+            /* Text article list layout */
+            <div className="flex flex-col divide-y divide-white/5 max-w-3xl">
+              {seriesList.map((item: Series) => (
+                <Link
+                  href={`/sequence/${item.id}`}
+                  key={item.id}
+                  className="group py-10 flex flex-col gap-4 hover:bg-white/[0.02] px-4 -mx-4 transition-colors"
+                >
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Clock className="w-3 h-3" />
+                      <span className="text-[10px] tracking-widest font-mono">{formatDate(item.date)}</span>
+                    </div>
+                    {item.location !== 'Unknown' && (
+                      <div className="flex items-center gap-2 text-slate-700">
+                        <MapPin className="w-3 h-3" />
+                        <span className="text-[10px] tracking-widest">{item.location}</span>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-white text-lg font-light tracking-widest leading-snug group-hover:text-[#C0C0C0] transition-colors">
+                    {item.title || item.story.split('\n')[0].replace(/^#+\s*/, '') || `記錄 ${item.seriesId}`}
                   </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-          
+                  {item.story && (
+                    <p className="text-slate-600 text-sm font-light leading-relaxed line-clamp-3 group-hover:text-slate-500 transition-colors">
+                      {item.story.replace(/^#+\s*.+\n?/m, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\[(.+?)\]\(.+?\)/g, '$1').trim()}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-4 h-px bg-white/20 group-hover:w-8 transition-all duration-500" />
+                    <span className="text-slate-600 text-[10px] tracking-widest uppercase group-hover:text-slate-400 transition-colors flex items-center gap-1">
+                      閱讀全文 <ChevronRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+              {seriesList.length === 0 && (
+                <p className="text-slate-700 text-sm tracking-widest py-12">尚無記錄內容。</p>
+              )}
+            </div>
+          ) : (
+          /* Image grid layout */
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
+                {seriesList.map((item: Series, index: number) => (
+                  <Link
+                    href={`/sequence/${item.id}`}
+                    key={item.id}
+                    className={`flex flex-col gap-6 group ${getStaggerClass(index)}`}
+                  >
+                    <div className="relative aspect-[4/5] w-full grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out cursor-crosshair shadow-[0_0_15px_rgba(255,255,255,0.03)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] border border-white/5">
+                      <Image
+                        src={item.coverImage}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 px-2">
+                      <p className="text-[#C0C0C0]/80 text-xs tracking-[0.3em] uppercase font-light">
+                        Series {item.seriesId}
+                      </p>
+                      <h3 className="text-white text-lg font-light tracking-widest">
+                        {item.title}
+                      </h3>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+          )}
+
           <div className="mt-32 border-t border-white/5 pt-12 flex flex-col items-center">
             <p className="text-slate-700 text-[10px] tracking-[0.5em] uppercase font-light mb-4">
               Project Memories • Archive
@@ -98,7 +151,7 @@ export default async function SubCategoryPage({
             </div>
           </div>
         </main>
-        
+
         <footer className="px-6 py-12 md:px-20 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
           <nav className="flex gap-10">
             <Link href="/" className="text-[10px] tracking-[0.2em] uppercase text-white hover:text-[#C0C0C0]">首頁</Link>

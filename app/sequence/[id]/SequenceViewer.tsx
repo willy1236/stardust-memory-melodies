@@ -7,11 +7,108 @@ import { ChevronLeft, Play, Pause, ChevronRight, Clock, MapPin, Fingerprint } fr
 import Markdown from "react-markdown";
 import { type Series } from "@/lib/gallery";
 
-export default function SequenceViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTotal }: { sequence: Series; prevId: string | null; nextId: string | null; sequenceIndex: number; sequenceTotal: number }) {
+function formatDate(date: string): string {
+  if (date === 'Unknown') return '日期不明';
+  return date.replace(/(\d{4})(\d{2})(\d{2})/, '$1 / $2 / $3');
+}
+
+function TextArticleViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTotal }: { sequence: Series; prevId: string | null; nextId: string | null; sequenceIndex: number; sequenceTotal: number }) {
+  const title = sequence.title || sequence.story.split('\n')[0].replace(/^#+\s*/, '') || `記錄 ${sequence.seriesId}`;
+  const storyBody = sequence.title
+    ? sequence.story
+    : sequence.story.replace(/^.+\n?/, '').trim();
+
+  return (
+    <main className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-6 py-12">
+      {/* Navigation row */}
+      <div className="flex items-center justify-between mb-16">
+        <div className="flex items-center gap-4">
+          {prevId ? (
+            <Link href={`/sequence/${prevId}`} className="text-slate-600 hover:text-white transition-colors flex items-center gap-2">
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-[10px] tracking-widest uppercase">上一篇</span>
+            </Link>
+          ) : <div />}
+        </div>
+        <span className="text-slate-600 text-[11px] tracking-[0.4em] uppercase font-mono">
+          {String(sequenceIndex).padStart(2, '0')} / {String(sequenceTotal).padStart(2, '0')}
+        </span>
+        <div className="flex items-center gap-4">
+          {nextId ? (
+            <Link href={`/sequence/${nextId}`} className="text-slate-600 hover:text-white transition-colors flex items-center gap-2">
+              <span className="text-[10px] tracking-widest uppercase">下一篇</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          ) : <div />}
+        </div>
+      </div>
+
+      {/* Metadata */}
+      <div className="flex items-center gap-8 mb-12">
+        <div className="flex items-center gap-2 text-slate-600">
+          <Clock className="w-3 h-3" />
+          <span className="text-[10px] tracking-widest font-mono">{formatDate(sequence.date)}</span>
+        </div>
+        {sequence.location !== 'Unknown' && (
+          <div className="flex items-center gap-2 text-slate-600">
+            <MapPin className="w-3 h-3" />
+            <span className="text-[10px] tracking-widest">{sequence.location}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-slate-700 ml-auto">
+          <Fingerprint className="w-3 h-3" />
+          <span className="text-[10px] tracking-widest font-mono">SEQ-MS-{sequence.seriesId}</span>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="w-12 h-px bg-white/20 mb-12" />
+
+      {/* Title */}
+      <h1 className="text-white text-2xl font-light tracking-[0.15em] leading-loose mb-12">
+        {title}
+      </h1>
+
+      {/* Story body */}
+      {storyBody && (
+        <div className="text-slate-300 text-base font-light leading-[2] tracking-wide
+          [&>p]:mb-6
+          [&>h1]:text-2xl [&>h1]:text-white [&>h1]:font-light [&>h1]:tracking-widest [&>h1]:mb-6 [&>h1]:mt-10
+          [&>h2]:text-xl [&>h2]:text-white [&>h2]:font-light [&>h2]:tracking-widest [&>h2]:mb-4 [&>h2]:mt-8
+          [&>h3]:text-lg [&>h3]:text-slate-200 [&>h3]:font-light [&>h3]:tracking-widest [&>h3]:mb-4 [&>h3]:mt-6
+          [&>ul]:list-disc [&>ul]:pl-8 [&>ul]:mb-6 [&>ul>li]:mb-2
+          [&>ol]:list-decimal [&>ol]:pl-8 [&>ol]:mb-6 [&>ol>li]:mb-2
+          [&>strong]:text-white [&>strong]:font-medium
+          [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-6
+          [&>a]:text-blue-400 [&>a]:underline [&>a]:underline-offset-2">
+          <Markdown>{storyBody}</Markdown>
+        </div>
+      )}
+
+      {/* Bottom spacer */}
+      <div className="mt-24 border-t border-white/5 pt-12 flex items-center justify-between">
+        {prevId ? (
+          <Link href={`/sequence/${prevId}`} className="text-slate-600 hover:text-white transition-colors flex items-center gap-2">
+            <ChevronLeft className="w-4 h-4" />
+            <span className="text-[10px] tracking-widest uppercase">上一篇</span>
+          </Link>
+        ) : <div />}
+        {nextId ? (
+          <Link href={`/sequence/${nextId}`} className="text-slate-600 hover:text-white transition-colors flex items-center gap-2">
+            <span className="text-[10px] tracking-widest uppercase">下一篇</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        ) : <div />}
+      </div>
+    </main>
+  );
+}
+
+function ImageSequenceViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTotal }: { sequence: Series; prevId: string | null; nextId: string | null; sequenceIndex: number; sequenceTotal: number }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const images = sequence.images && sequence.images.length > 0 ? sequence.images : [sequence.coverImage];
+  const images = sequence.images;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -160,4 +257,11 @@ export default function SequenceViewer({ sequence, prevId, nextId, sequenceIndex
       </div>
     </main>
   );
+}
+
+export default function SequenceViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTotal }: { sequence: Series; prevId: string | null; nextId: string | null; sequenceIndex: number; sequenceTotal: number }) {
+  if (!sequence.images || sequence.images.length === 0) {
+    return <TextArticleViewer sequence={sequence} prevId={prevId} nextId={nextId} sequenceIndex={sequenceIndex} sequenceTotal={sequenceTotal} />;
+  }
+  return <ImageSequenceViewer sequence={sequence} prevId={prevId} nextId={nextId} sequenceIndex={sequenceIndex} sequenceTotal={sequenceTotal} />;
 }

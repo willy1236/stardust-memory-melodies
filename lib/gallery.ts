@@ -6,6 +6,7 @@ export interface Category {
   name: string;
   nameEn: string;
   folderName: string;
+  type?: string;
 }
 
 export interface SubCategory {
@@ -40,6 +41,12 @@ export interface GalleryData {
 interface CategoryMeta {
   name?: string;
   nameEn?: string;
+  type?: string;
+}
+
+interface SubCategoryMeta {
+  name?: string;
+  description?: string;
 }
 
 interface SeriesMeta {
@@ -51,7 +58,7 @@ interface SeriesMeta {
 
 interface GalleryDescriptions {
   categories?: Record<string, CategoryMeta>;
-  subCategories?: Record<string, string>;
+  subCategories?: Record<string, string | SubCategoryMeta>;
   series?: Record<string, SeriesMeta | string>;
 }
 
@@ -92,12 +99,14 @@ export async function getGalleryData(): Promise<GalleryData> {
 
       const catId = catMatch[1];
       const catName = catMatch[2] || catNameRaw;
+      const catMeta = descriptions.categories?.[catId];
 
       categories[catId] = {
         id: catId,
-        name: descriptions.categories?.[catId]?.name || catName,
-        nameEn: descriptions.categories?.[catId]?.nameEn || catNameRaw,
-        folderName: catNameRaw
+        name: catMeta?.name || catName,
+        nameEn: catMeta?.nameEn || catNameRaw,
+        folderName: catNameRaw,
+        type: catMeta?.type,
       };
 
       const l1Path = path.join(galleryDir, l1.name);
@@ -116,13 +125,17 @@ export async function getGalleryData(): Promise<GalleryData> {
         const subCatName = subCatMatch[2] || subCatNameRaw;
 
         const globalSubCatId = `${catId}-${subCatId}`;
+        const subCatDesc = descriptions.subCategories?.[globalSubCatId];
+        const description = typeof subCatDesc === 'string'
+          ? subCatDesc
+          : (subCatDesc as SubCategoryMeta)?.description || '';
 
         subCategories[globalSubCatId] = {
           id: globalSubCatId, // Use this for routing
           categoryId: catId,
           subCategoryId: subCatId, // The simple number requested by user
-          name: subCatName,
-          description: descriptions.subCategories?.[globalSubCatId] || "", // Only from data.json
+          name: (subCatDesc as SubCategoryMeta)?.name || subCatName,
+          description,
           folderName: subCatNameRaw
         };
 
@@ -194,6 +207,70 @@ export async function getGalleryData(): Promise<GalleryData> {
     console.error("Error reading gallery directory:", error);
   }
 
+  // Load text-type categories from gallery.json (no filesystem required)
+  for (const [catId, catMeta] of Object.entries(descriptions.categories || {})) {
+    if (catMeta.type !== 'text' || categories[catId]) continue;
+
+    categories[catId] = {
+      id: catId,
+      name: catMeta.name || catId,
+      nameEn: catMeta.nameEn || catId,
+      folderName: '',
+      type: 'text',
+    };
+
+    // Load subcategories for this text category
+    for (const [subCatId, subCatDesc] of Object.entries(descriptions.subCategories || {})) {
+      if (!subCatId.startsWith(`${catId}-`)) continue;
+
+      const parts = subCatId.split('-');
+      const subId = parts[1];
+      const description = typeof subCatDesc === 'string'
+        ? subCatDesc
+        : (subCatDesc as SubCategoryMeta)?.description || '';
+      const subCatName = (subCatDesc as SubCategoryMeta)?.name || subCatId;
+
+      subCategories[subCatId] = {
+        id: subCatId,
+        categoryId: catId,
+        subCategoryId: subId,
+        name: subCatName,
+        description,
+        folderName: '',
+      };
+
+      // Load series for this subcategory
+      for (const [seriesId, seriesMeta] of Object.entries(descriptions.series || {})) {
+        if (!seriesId.startsWith(`${subCatId}-`)) continue;
+
+        const sParts = seriesId.split('-');
+        const sId = sParts[2];
+        const meta = typeof seriesMeta === 'object' ? seriesMeta as SeriesMeta : undefined;
+        const story = typeof seriesMeta === 'string' ? seriesMeta : (meta?.story || '');
+
+        series.push({
+          id: seriesId,
+          categoryId: catId,
+          globalSubCatId: subCatId,
+          subCategoryId: subId,
+          seriesId: sId,
+          title: meta?.title || '',
+          story,
+          date: meta?.date || 'Unknown',
+          location: meta?.location || 'Unknown',
+          coverImage: '',
+          images: [],
+        });
+      }
+    }
+  }
+
+  // Sort all series so text-category series appear in a consistent order
+  series.sort((a, b) => {
+    const aKey = `${a.categoryId}-${a.globalSubCatId}-${a.seriesId}`;
+    const bKey = `${b.categoryId}-${b.globalSubCatId}-${b.seriesId}`;
+    return aKey.localeCompare(bKey, undefined, { numeric: true });
+  });
+
   return { categories, subCategories, series };
 }
-
