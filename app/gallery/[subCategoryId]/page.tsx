@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Aperture, ChevronLeft, Sparkles } from "lucide-react";
 import { notFound } from "next/navigation";
 import Markdown from "react-markdown";
-import { getGalleryData } from '@/lib/gallery';
+import { getGalleryData, type Series } from '@/lib/gallery';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +20,7 @@ export default async function SubCategoryPage({
     notFound();
   }
 
-  const seriesList = data.series.filter((s: any) => s.globalSubCatId === subCategoryId || s.subCategoryId === subCategoryId);
+  const seriesList = data.series.filter((s: Series) => s.globalSubCatId === subCategoryId || s.subCategoryId === subCategoryId);
 
   const getStaggerClass = (index: number) => {
     const pos = index % 3;
@@ -62,7 +62,7 @@ export default async function SubCategoryPage({
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
-            {seriesList.map((item: any, index: number) => (
+            {seriesList.map((item: Series, index: number) => (
               <Link
                 href={`/sequence/${item.id}`}
                 key={item.id}
@@ -84,9 +84,6 @@ export default async function SubCategoryPage({
                   <h3 className="text-white text-lg font-light tracking-widest">
                     {item.title}
                   </h3>
-                  <p className="text-slate-600 text-xs italic">
-                    {item.subtitle}
-                  </p>
                 </div>
               </Link>
             ))}
@@ -109,7 +106,7 @@ export default async function SubCategoryPage({
             <Link href="#" className="text-[10px] tracking-[0.2em] uppercase text-white hover:text-[#C0C0C0]">設定</Link>
           </nav>
           <div className="text-[10px] tracking-[0.2em] uppercase text-slate-500">
-            © 2025 記憶畫廊
+            © 2026 記憶畫廊
           </div>
         </footer>
       </div>

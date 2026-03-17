@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Aperture, Search, User, Moon, Sparkles } from "lucide-react";
+import { type GalleryData, type Category, type SubCategory, type Series } from "@/lib/gallery";
+
+type SubCategoryWithCover = SubCategory & { coverImage: string };
 
 function truncateAtSecondHeading(text: string): string {
   const lines = text.split('\n');
@@ -18,15 +21,15 @@ function truncateAtSecondHeading(text: string): string {
   return lines.slice(start).join('\n').trim();
 }
 
-export default function GalleryClient({ data }: { data: any }) {
+export default function GalleryClient({ data }: { data: GalleryData }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const categories = Object.entries(data.categories).map(([id, cat]: any) => ({ id, ...cat }));
-  const subCategories = Object.entries(data.subCategories).map(([id, subCat]: any) => {
-    const firstSeries = data.series.find((s: any) => s.globalSubCatId === id || s.subCategoryId === id);
+  const categories: Category[] = Object.entries(data.categories).map(([id, cat]) => ({ ...cat, id }));
+  const subCategories: SubCategoryWithCover[] = Object.entries(data.subCategories).map(([id, subCat]) => {
+    const firstSeries = data.series.find((s: Series) => s.globalSubCatId === id || s.subCategoryId === id);
     return {
-      id,
       ...subCat,
+      id,
       coverImage: firstSeries?.coverImage || "https://picsum.photos/seed/fallback/800/1000"
     };
   });
@@ -99,7 +102,7 @@ export default function GalleryClient({ data }: { data: any }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-12">
-            {filteredSubCategories.map((item: any, index: number) => (
+            {filteredSubCategories.map((item: SubCategoryWithCover, index: number) => (
               <Link
                 href={`/gallery/${item.id}`}
                 key={item.id}
@@ -147,7 +150,7 @@ export default function GalleryClient({ data }: { data: any }) {
             <Link href="#" className="text-[10px] tracking-[0.2em] uppercase text-white hover:text-[#C0C0C0]">設定</Link>
           </nav>
           <div className="text-[10px] tracking-[0.2em] uppercase text-slate-500">
-            © 2025 記憶畫廊
+            © 2026 記憶畫廊
           </div>
         </footer>
       </div>

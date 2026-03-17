@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ChevronLeft, Play, Pause, ChevronRight, Clock, MapPin, Fingerprint } from "lucide-react";
 import Markdown from "react-markdown";
+import { type Series } from "@/lib/gallery";
 
-export default function SequenceViewer({ sequence, prevId, nextId }: { sequence: any; prevId: string | null; nextId: string | null }) {
+export default function SequenceViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTotal }: { sequence: Series; prevId: string | null; nextId: string | null; sequenceIndex: number; sequenceTotal: number }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -41,13 +42,18 @@ export default function SequenceViewer({ sequence, prevId, nextId }: { sequence:
         </div>
 
         <div className="flex-1">
+          <div className="flex justify-end mb-3">
+            <span className="text-slate-500 text-[11px] tracking-[0.4em] uppercase font-mono">
+              {String(sequenceIndex).padStart(2, '0')} / {String(sequenceTotal).padStart(2, '0')}
+            </span>
+          </div>
           <div className="relative group">
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-800 shadow-2xl">
+            <div className="relative w-full h-[70vh] overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-800 shadow-2xl">
               <Image
                 src={images[currentIndex]}
                 alt={`${sequence.title} - ${currentIndex + 1}`}
                 fill
-                className="object-cover opacity-80 transition-opacity duration-500"
+                className="object-contain opacity-80 transition-opacity duration-500"
                 referrerPolicy="no-referrer"
               />
             </div>

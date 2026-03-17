@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Aperture, Share2, Info } from "lucide-react";
 import SequenceViewer from "./SequenceViewer";
-import { getGalleryData } from '@/lib/gallery';
+import { getGalleryData, type Series } from '@/lib/gallery';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +14,7 @@ export default async function SequencePage({
   const { id } = await params;
   const data = await getGalleryData();
   const seriesList = data.series;
-  const currentIndex = seriesList.findIndex((s: any) => s.id === id);
+  const currentIndex = seriesList.findIndex((s: Series) => s.id === id);
   const sequence = seriesList[currentIndex];
 
   if (!sequence) {
@@ -23,6 +23,10 @@ export default async function SequencePage({
 
   const prevId = currentIndex > 0 ? seriesList[currentIndex - 1].id : null;
   const nextId = currentIndex < seriesList.length - 1 ? seriesList[currentIndex + 1].id : null;
+
+  const subCatId = sequence.globalSubCatId || sequence.subCategoryId;
+  const siblingList = seriesList.filter((s: Series) => (s.globalSubCatId || s.subCategoryId) === subCatId);
+  const siblingIndex = siblingList.findIndex((s: Series) => s.id === id);
 
   return (
     <div
@@ -55,7 +59,7 @@ export default async function SequencePage({
       </header>
 
       {/* Main Content with Carousel */}
-      <SequenceViewer sequence={sequence} prevId={prevId} nextId={nextId} />
+      <SequenceViewer sequence={sequence} prevId={prevId} nextId={nextId} sequenceIndex={siblingIndex + 1} sequenceTotal={siblingList.length} />
     </div>
   );
 }
