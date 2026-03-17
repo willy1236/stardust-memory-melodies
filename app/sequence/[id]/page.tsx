@@ -4,6 +4,8 @@ import { Aperture, Share2, Info } from "lucide-react";
 import SequenceViewer from "./SequenceViewer";
 import { getGalleryData } from '@/lib/gallery';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SequencePage({
   params,
 }: {
