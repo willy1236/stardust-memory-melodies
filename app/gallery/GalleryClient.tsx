@@ -146,7 +146,7 @@ export default function GalleryClient({ data }: { data: GalleryData }) {
                       {item.name}
                     </h3>
                     <p className="text-slate-600 text-xs font-light leading-relaxed line-clamp-3 mt-auto">
-                      {stripMarkdown(truncateAtSecondHeading(item.description))}
+                      {stripMarkdown(truncateAtSecondHeading(item.coverDescription))}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <div className="w-4 h-px bg-white/20 group-hover:w-8 transition-all duration-500" />
@@ -196,7 +196,7 @@ export default function GalleryClient({ data }: { data: GalleryData }) {
                         {item.name}
                       </h3>
                       <p className="text-slate-600 text-xs italic whitespace-pre-line">
-                        {truncateAtSecondHeading(item.description)}
+                        {truncateAtSecondHeading(item.coverDescription)}
                       </p>
                     </div>
                   </Link>

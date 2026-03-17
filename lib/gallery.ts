@@ -14,7 +14,7 @@ export interface SubCategory {
   categoryId: string;
   subCategoryId: string;
   name: string;
-  description: string;
+  coverDescription: string;
   folderName: string;
 }
 
@@ -47,7 +47,7 @@ interface CategoryMeta {
 
 interface SubCategoryMeta {
   name?: string;
-  description?: string;
+  coverDescription?: string;
 }
 
 interface SeriesMeta {
@@ -127,26 +127,28 @@ export async function getGalleryData(): Promise<GalleryData> {
 
         const globalSubCatId = `${catId}-${subCatId}`;
         const subCatDesc = descriptions.subCategories?.[globalSubCatId];
-        const description = subCatDesc?.description || '';
+        const coverDescription = subCatDesc?.coverDescription || '';
 
         subCategories[globalSubCatId] = {
           id: globalSubCatId, // Use this for routing
           categoryId: catId,
           subCategoryId: subCatId, // The simple number requested by user
           name: subCatDesc?.name || subCatName,
-          description,
+          coverDescription,
           folderName: subCatNameRaw
         };
 
         const l2Path = path.join(l1Path, l2.name);
 
-        // If present, subcategory description.md overrides JSON description.
-        try {
-          const descriptionFile = path.join(l2Path, 'description.md');
-          const descriptionContent = await fs.readFile(descriptionFile, 'utf8');
-          subCategories[globalSubCatId].description = descriptionContent;
-        } catch {
-          // Ignore missing description.md.
+        // JSON coverDescription has priority; fallback to description.md when empty.
+        if (!subCategories[globalSubCatId].coverDescription.trim()) {
+          try {
+            const descriptionFile = path.join(l2Path, 'description.md');
+            const descriptionContent = await fs.readFile(descriptionFile, 'utf8');
+            subCategories[globalSubCatId].coverDescription = descriptionContent;
+          } catch {
+            // Ignore missing description.md.
+          }
         }
 
         const level3Entries = (await fs.readdir(l2Path, { withFileTypes: true }))
@@ -275,7 +277,7 @@ export async function getGalleryData(): Promise<GalleryData> {
 
       const parts = subCatId.split('-');
       const subId = parts[1];
-      const description = subCatDesc.description || '';
+      const coverDescription = subCatDesc.coverDescription || '';
       const subCatName = subCatDesc.name || subCatId;
 
       subCategories[subCatId] = {
@@ -283,7 +285,7 @@ export async function getGalleryData(): Promise<GalleryData> {
         categoryId: catId,
         subCategoryId: subId,
         name: subCatName,
-        description,
+        coverDescription,
         folderName: '',
       };
 

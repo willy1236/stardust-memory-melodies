@@ -14,31 +14,27 @@
   "subCategories": {
     "1-1": {
       "name": "文字歷史",
-      "description": "用文字紀錄下每一段歷史的點滴。"
-    },
-    "1-2": {
-      "name": "雲端相聚",
-      "description": "跨越時空的雲端相聚。\n\n### 活動亮點\n1. 經驗分享\n2. 未來展望"
+      "coverDescription": "用文字紀錄下每一段歷史的點滴。"
     },
     "2-1": {
       "name": "雀碼伺服器",
-      "description": ""
+      "coverDescription": "生存的起點"
     },
     "2-2": {
       "name": "指令生存1",
-      "description": ""
+      "coverDescription": "指令生存的第一站"
     },
     "2-3": {
       "name": "指令生存2",
-      "description": "平凡生活中的不平凡。\n\n> 記錄每一天的微小感動。"
+      "coverDescription": "建築生存"
     }
   },
   "series": {
     "1-1-1": {
       "title": "快樂營",
       "story": "在快樂營的日子裡，我們一起經歷了許多難忘的冒險和挑戰。\n**這是一段關於友誼和成長的記憶。**",
-      "date": "20230101",
-      "location": "虛空邊緣"
+      "date": "2019-08-21",
+      "location": "快樂營"
     },
     "2-1-1": {
       "title": "大廳區：登頂大廳建築物",
