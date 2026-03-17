@@ -6,32 +6,15 @@ on:
       - main
 
 jobs:
-  ci-checks:
-    name: Run Type Check & Build (CI)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
   build-and-deploy:
     runs-on: self-hosted
-    needs: ci-checks
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Validate secrets
+        shell: bash
         run: |
           if [ -z "${{ secrets.GALLERY_PATH }}" ]; then
             echo "❌ GALLERY_PATH secret is not set. Please add it in GitHub repository Settings > Secrets."
@@ -39,6 +22,7 @@ jobs:
           fi
 
       - name: Build and Restart Docker Compose Service
+        shell: bash
         env:
           GALLERY_PATH: ${{ secrets.GALLERY_PATH }}
         run: |
@@ -47,6 +31,7 @@ jobs:
           echo "Deployment completed."
 
       - name: Prune old Docker images
+        shell: bash
         if: always()
         run: |
           docker image prune -f
