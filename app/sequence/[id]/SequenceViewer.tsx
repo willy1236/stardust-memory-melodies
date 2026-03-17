@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ChevronLeft, Play, Pause, ChevronRight, Clock, MapPin, Fingerprint } from "lucide-react";
 import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import { type Series } from "@/lib/gallery";
 
 function formatDate(date: string): string {
@@ -13,10 +14,27 @@ function formatDate(date: string): string {
 }
 
 function TextArticleViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTotal }: { sequence: Series; prevId: string | null; nextId: string | null; sequenceIndex: number; sequenceTotal: number }) {
-  const title = sequence.title || sequence.story.split('\n')[0].replace(/^#+\s*/, '') || `記錄 ${sequence.seriesId}`;
-  const storyBody = sequence.title
-    ? sequence.story
-    : sequence.story.replace(/^.+\n?/, '').trim();
+  const mdFirstLine = sequence.mdContent?.split('\n')[0].replace(/^#+\s*/, '').trim();
+  const storyFirstLine = sequence.story?.split('\n')[0].replace(/^#+\s*/, '').trim();
+  const title = sequence.title || mdFirstLine || storyFirstLine || `記錄 ${sequence.seriesId}`;
+
+  // Strip first line from mdContent only if it was extracted as the title
+  const mdBody = !sequence.title && mdFirstLine && sequence.mdContent?.split('\n')[0].match(/^#/)
+    ? sequence.mdContent.replace(/^.+\n?/, '').trim()
+    : sequence.mdContent;
+
+  const storyBody = sequence.story;
+
+  const markdownClass = "text-slate-300 text-base font-light leading-[2] tracking-wide\
+          [&>p]:mb-6\
+          [&>h1]:text-2xl [&>h1]:text-white [&>h1]:font-light [&>h1]:tracking-widest [&>h1]:mb-6 [&>h1]:mt-10\
+          [&>h2]:text-xl [&>h2]:text-white [&>h2]:font-light [&>h2]:tracking-widest [&>h2]:mb-4 [&>h2]:mt-8\
+          [&>h3]:text-lg [&>h3]:text-slate-200 [&>h3]:font-light [&>h3]:tracking-widest [&>h3]:mb-4 [&>h3]:mt-6\
+          [&>ul]:list-disc [&>ul]:pl-8 [&>ul]:mb-6 [&>ul>li]:mb-2\
+          [&>ol]:list-decimal [&>ol]:pl-8 [&>ol]:mb-6 [&>ol>li]:mb-2\
+          [&>strong]:text-white [&>strong]:font-medium\
+          [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-6\
+          [&>a]:text-blue-400 [&>a]:underline [&>a]:underline-offset-2";
 
   return (
     <main className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-6 py-12">
@@ -71,17 +89,15 @@ function TextArticleViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTo
 
       {/* Story body */}
       {storyBody && (
-        <div className="text-slate-300 text-base font-light leading-[2] tracking-wide
-          [&>p]:mb-6
-          [&>h1]:text-2xl [&>h1]:text-white [&>h1]:font-light [&>h1]:tracking-widest [&>h1]:mb-6 [&>h1]:mt-10
-          [&>h2]:text-xl [&>h2]:text-white [&>h2]:font-light [&>h2]:tracking-widest [&>h2]:mb-4 [&>h2]:mt-8
-          [&>h3]:text-lg [&>h3]:text-slate-200 [&>h3]:font-light [&>h3]:tracking-widest [&>h3]:mb-4 [&>h3]:mt-6
-          [&>ul]:list-disc [&>ul]:pl-8 [&>ul]:mb-6 [&>ul>li]:mb-2
-          [&>ol]:list-decimal [&>ol]:pl-8 [&>ol]:mb-6 [&>ol>li]:mb-2
-          [&>strong]:text-white [&>strong]:font-medium
-          [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-6
-          [&>a]:text-blue-400 [&>a]:underline [&>a]:underline-offset-2">
-          <Markdown>{storyBody}</Markdown>
+        <div className={markdownClass}>
+          <Markdown remarkPlugins={[remarkBreaks]}>{storyBody}</Markdown>
+        </div>
+      )}
+
+      {/* Filesystem .md content */}
+      {mdBody && (
+        <div className={markdownClass}>
+          <Markdown remarkPlugins={[remarkBreaks]}>{mdBody}</Markdown>
         </div>
       )}
 
@@ -188,7 +204,12 @@ function ImageSequenceViewer({ sequence, prevId, nextId, sequenceIndex, sequence
         </h3>
         {sequence.story && (
           <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
-            <Markdown>{sequence.story}</Markdown>
+            <Markdown remarkPlugins={[remarkBreaks]}>{sequence.story}</Markdown>
+          </div>
+        )}
+        {sequence.mdContent && (
+          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
+            <Markdown remarkPlugins={[remarkBreaks]}>{sequence.mdContent}</Markdown>
           </div>
         )}
       </div>

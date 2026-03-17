@@ -30,6 +30,7 @@ export interface Series {
   location: string;
   coverImage: string;
   images: string[];
+  mdContent: string;
 }
 
 export interface GalleryData {
@@ -146,24 +147,21 @@ export async function getGalleryData(): Promise<GalleryData> {
         const seriesMap: Record<string, Series> = {};
 
         for (const l3 of level3Entries) {
-          // Rule: Second level inside MUST be images. Ignore any directories.
-          if (l3.isFile() && l3.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-            const fileName = l3.name;
-            let seriesId = '1'; // Default series ID
+          if (!l3.isFile()) continue;
+          const fileName = l3.name;
+
+          if (fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            // --- Image file ---
+            let seriesId = '1';
             let date = 'Unknown';
 
-            // Parse image name: e.g. 1-1-1-1-20260101.jpg
-            // Groups: 1: series, 2: date
             const imgMatch = fileName.match(/^\d+-\d+-(\d+)-\d+-(\d+)/);
             if (imgMatch) {
               seriesId = imgMatch[1];
               date = imgMatch[2];
             } else {
-              // Fallback loose match just in case
               const looseMatch = fileName.match(/^\d+-\d+-(\d+)/);
-              if (looseMatch) {
-                seriesId = looseMatch[1];
-              }
+              if (looseMatch) seriesId = looseMatch[1];
             }
 
             const globalSeriesId = `${globalSubCatId}-${seriesId}`;
@@ -172,32 +170,74 @@ export async function getGalleryData(): Promise<GalleryData> {
               const seriesDesc = descriptions.series?.[globalSeriesId];
               const seriesMeta = typeof seriesDesc === 'object' ? seriesDesc : undefined;
               seriesMap[globalSeriesId] = {
-                id: globalSeriesId, // For routing
+                id: globalSeriesId,
                 categoryId: catId,
                 globalSubCatId: globalSubCatId,
                 subCategoryId: subCatId,
-                seriesId: seriesId, // Simple number
+                seriesId: seriesId,
                 title: seriesMeta?.title || "",
                 story: (typeof seriesDesc === 'string' ? seriesDesc : seriesMeta?.story) || "",
                 date: seriesMeta?.date || date,
                 location: seriesMeta?.location || "Unknown",
                 coverImage: `/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`,
-                images: []
+                images: [],
+                mdContent: "",
               };
             }
 
             seriesMap[globalSeriesId].images.push(`/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`);
 
-            // Update date if we found a valid one and it was unknown
             if (seriesMap[globalSeriesId].date === 'Unknown' && date !== 'Unknown') {
               seriesMap[globalSeriesId].date = date;
+            }
+
+          } else if (fileName.match(/\.md$/i)) {
+            // --- Markdown file ---
+            let seriesId = '1';
+            let date = 'Unknown';
+
+            const mdMatch = fileName.match(/^\d+-\d+-(\d+)-\d+-(\d+)/);
+            if (mdMatch) {
+              seriesId = mdMatch[1];
+              date = mdMatch[2];
+            } else {
+              const looseMatch = fileName.match(/^\d+-\d+-(\d+)/);
+              if (looseMatch) seriesId = looseMatch[1];
+            }
+
+            const globalSeriesId = `${globalSubCatId}-${seriesId}`;
+            const fileContent = await fs.readFile(path.join(l2Path, fileName), 'utf8');
+
+            if (!seriesMap[globalSeriesId]) {
+              const seriesDesc = descriptions.series?.[globalSeriesId];
+              const seriesMeta = typeof seriesDesc === 'object' ? seriesDesc as SeriesMeta : undefined;
+              const jsonStory = typeof seriesDesc === 'string' ? seriesDesc : seriesMeta?.story;
+              seriesMap[globalSeriesId] = {
+                id: globalSeriesId,
+                categoryId: catId,
+                globalSubCatId: globalSubCatId,
+                subCategoryId: subCatId,
+                seriesId: seriesId,
+                title: seriesMeta?.title || "",
+                story: jsonStory || "",
+                mdContent: fileContent,
+                date: seriesMeta?.date || date,
+                location: seriesMeta?.location || "Unknown",
+                coverImage: "",
+                images: [],
+              };
+            } else {
+              seriesMap[globalSeriesId].mdContent = fileContent;
+              if (seriesMap[globalSeriesId].date === 'Unknown' && date !== 'Unknown') {
+                seriesMap[globalSeriesId].date = date;
+              }
             }
           }
         }
 
         // Add all found series to the main array
         for (const s of Object.values(seriesMap).sort((a, b) => parseInt(a.seriesId) - parseInt(b.seriesId))) {
-          if (s.images.length > 0) {
+          if (s.images.length > 0 || s.story || s.mdContent) {
             series.push(s);
           }
         }
@@ -242,6 +282,7 @@ export async function getGalleryData(): Promise<GalleryData> {
       // Load series for this subcategory
       for (const [seriesId, seriesMeta] of Object.entries(descriptions.series || {})) {
         if (!seriesId.startsWith(`${subCatId}-`)) continue;
+        if (series.some(s => s.id === seriesId)) continue;
 
         const sParts = seriesId.split('-');
         const sId = sParts[2];
@@ -260,6 +301,7 @@ export async function getGalleryData(): Promise<GalleryData> {
           location: meta?.location || 'Unknown',
           coverImage: '',
           images: [],
+          mdContent: '',
         });
       }
     }

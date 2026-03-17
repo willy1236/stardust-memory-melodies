@@ -14,19 +14,18 @@ export default async function SequencePage({
   const { id } = await params;
   const data = await getGalleryData();
   const seriesList = data.series;
-  const currentIndex = seriesList.findIndex((s: Series) => s.id === id);
-  const sequence = seriesList[currentIndex];
+  const sequence = seriesList.find((s: Series) => s.id === id);
 
   if (!sequence) {
     notFound();
   }
 
-  const prevId = currentIndex > 0 ? seriesList[currentIndex - 1].id : null;
-  const nextId = currentIndex < seriesList.length - 1 ? seriesList[currentIndex + 1].id : null;
-
   const subCatId = sequence.globalSubCatId || sequence.subCategoryId;
   const siblingList = seriesList.filter((s: Series) => (s.globalSubCatId || s.subCategoryId) === subCatId);
   const siblingIndex = siblingList.findIndex((s: Series) => s.id === id);
+
+  const prevId = siblingIndex > 0 ? siblingList[siblingIndex - 1].id : null;
+  const nextId = siblingIndex < siblingList.length - 1 ? siblingList[siblingIndex + 1].id : null;
 
   return (
     <div

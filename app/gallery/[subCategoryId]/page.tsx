@@ -4,6 +4,7 @@ import GalleryFooter, { GalleryArchiveDivider } from "@/components/GalleryFooter
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import { getGalleryData, type Series } from '@/lib/gallery';
 
 export const dynamic = 'force-dynamic';
@@ -67,7 +68,7 @@ export default async function SubCategoryPage({
         <main className="flex-1 flex flex-col py-10 px-6 md:px-20">
           {subCategory.description && (
             <div className="mb-16 text-slate-400 font-light tracking-widest leading-relaxed max-w-4xl [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
-              <Markdown>{subCategory.description}</Markdown>
+              <Markdown remarkPlugins={[remarkBreaks]}>{subCategory.description}</Markdown>
             </div>
           )}
 
