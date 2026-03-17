@@ -6,6 +6,7 @@ import Image from "next/image";
 import Markdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { getGalleryData, type Series } from '@/lib/gallery';
+import { splitConsecutiveBlockquotes } from "@/lib/markdown";
 
 export const dynamic = 'force-dynamic';
 
@@ -67,8 +68,8 @@ export default async function SubCategoryPage({
 
         <main className="flex-1 flex flex-col py-10 px-6 md:px-20">
           {subCategory.description && (
-            <div className="mb-16 text-slate-400 font-light tracking-widest leading-relaxed max-w-4xl [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
-              <Markdown remarkPlugins={[remarkBreaks]}>{subCategory.description}</Markdown>
+            <div className="mb-16 text-slate-400 font-light tracking-widest leading-relaxed max-w-4xl [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-2">
+              <Markdown remarkPlugins={[remarkBreaks]}>{splitConsecutiveBlockquotes(subCategory.description)}</Markdown>
             </div>
           )}
 

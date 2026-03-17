@@ -7,6 +7,7 @@ import { ChevronLeft, Play, Pause, ChevronRight, Clock, MapPin, Fingerprint } fr
 import Markdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { type Series } from "@/lib/gallery";
+import { splitConsecutiveBlockquotes } from "@/lib/markdown";
 
 function formatDate(date: string): string {
   if (date === 'Unknown') return '日期不明';
@@ -33,7 +34,7 @@ function TextArticleViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTo
           [&>ul]:list-disc [&>ul]:pl-8 [&>ul]:mb-6 [&>ul>li]:mb-2\
           [&>ol]:list-decimal [&>ol]:pl-8 [&>ol]:mb-6 [&>ol>li]:mb-2\
           [&>strong]:text-white [&>strong]:font-medium\
-          [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-6\
+          [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-2\
           [&>a]:text-blue-400 [&>a]:underline [&>a]:underline-offset-2";
 
   return (
@@ -90,14 +91,14 @@ function TextArticleViewer({ sequence, prevId, nextId, sequenceIndex, sequenceTo
       {/* Story body */}
       {storyBody && (
         <div className={markdownClass}>
-          <Markdown remarkPlugins={[remarkBreaks]}>{storyBody}</Markdown>
+          <Markdown remarkPlugins={[remarkBreaks]}>{splitConsecutiveBlockquotes(storyBody)}</Markdown>
         </div>
       )}
 
       {/* Filesystem .md content */}
       {mdBody && (
         <div className={markdownClass}>
-          <Markdown remarkPlugins={[remarkBreaks]}>{mdBody}</Markdown>
+          <Markdown remarkPlugins={[remarkBreaks]}>{splitConsecutiveBlockquotes(mdBody)}</Markdown>
         </div>
       )}
 
@@ -203,13 +204,13 @@ function ImageSequenceViewer({ sequence, prevId, nextId, sequenceIndex, sequence
           {sequence.title}
         </h3>
         {sequence.story && (
-          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
-            <Markdown remarkPlugins={[remarkBreaks]}>{sequence.story}</Markdown>
+          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-2">
+            <Markdown remarkPlugins={[remarkBreaks]}>{splitConsecutiveBlockquotes(sequence.story)}</Markdown>
           </div>
         )}
         {sequence.mdContent && (
-          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline">
-            <Markdown remarkPlugins={[remarkBreaks]}>{sequence.mdContent}</Markdown>
+          <div className="text-slate-400 text-base font-light leading-[2.2] tracking-widest px-4 opacity-70 whitespace-pre-line text-center [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>strong]:text-slate-200 [&>a]:text-blue-400 [&>a]:underline [&>blockquote]:border-l-2 [&>blockquote]:border-white/20 [&>blockquote]:pl-6 [&>blockquote]:text-slate-500 [&>blockquote]:italic [&>blockquote]:my-2">
+            <Markdown remarkPlugins={[remarkBreaks]}>{splitConsecutiveBlockquotes(sequence.mdContent)}</Markdown>
           </div>
         )}
       </div>

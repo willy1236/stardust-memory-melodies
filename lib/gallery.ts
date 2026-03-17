@@ -59,7 +59,7 @@ interface SeriesMeta {
 
 interface GalleryDescriptions {
   categories?: Record<string, CategoryMeta>;
-  subCategories?: Record<string, string | SubCategoryMeta>;
+  subCategories?: Record<string, SubCategoryMeta>;
   series?: Record<string, SeriesMeta | string>;
 }
 
@@ -127,20 +127,28 @@ export async function getGalleryData(): Promise<GalleryData> {
 
         const globalSubCatId = `${catId}-${subCatId}`;
         const subCatDesc = descriptions.subCategories?.[globalSubCatId];
-        const description = typeof subCatDesc === 'string'
-          ? subCatDesc
-          : (subCatDesc as SubCategoryMeta)?.description || '';
+        const description = subCatDesc?.description || '';
 
         subCategories[globalSubCatId] = {
           id: globalSubCatId, // Use this for routing
           categoryId: catId,
           subCategoryId: subCatId, // The simple number requested by user
-          name: (subCatDesc as SubCategoryMeta)?.name || subCatName,
+          name: subCatDesc?.name || subCatName,
           description,
           folderName: subCatNameRaw
         };
 
         const l2Path = path.join(l1Path, l2.name);
+
+        // If present, subcategory description.md overrides JSON description.
+        try {
+          const descriptionFile = path.join(l2Path, 'description.md');
+          const descriptionContent = await fs.readFile(descriptionFile, 'utf8');
+          subCategories[globalSubCatId].description = descriptionContent;
+        } catch {
+          // Ignore missing description.md.
+        }
+
         const level3Entries = (await fs.readdir(l2Path, { withFileTypes: true }))
           .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
 
@@ -149,6 +157,8 @@ export async function getGalleryData(): Promise<GalleryData> {
         for (const l3 of level3Entries) {
           if (!l3.isFile()) continue;
           const fileName = l3.name;
+
+          if (fileName.toLowerCase() === 'description.md') continue;
 
           if (fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
             // --- Image file ---
@@ -265,10 +275,8 @@ export async function getGalleryData(): Promise<GalleryData> {
 
       const parts = subCatId.split('-');
       const subId = parts[1];
-      const description = typeof subCatDesc === 'string'
-        ? subCatDesc
-        : (subCatDesc as SubCategoryMeta)?.description || '';
-      const subCatName = (subCatDesc as SubCategoryMeta)?.name || subCatId;
+      const description = subCatDesc.description || '';
+      const subCatName = subCatDesc.name || subCatId;
 
       subCategories[subCatId] = {
         id: subCatId,
