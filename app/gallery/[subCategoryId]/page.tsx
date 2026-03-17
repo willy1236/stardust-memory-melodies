@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Aperture, ChevronLeft, Sparkles, Clock, MapPin, ChevronRight } from "lucide-react";
+import { Aperture, ChevronLeft, Clock, MapPin, ChevronRight } from "lucide-react";
+import GalleryFooter, { GalleryArchiveDivider } from "@/components/GalleryFooter";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Markdown from "react-markdown";
@@ -35,7 +36,7 @@ export default async function SubCategoryPage({
     const pos = index % 3;
     if (pos === 0) return '';
     if (pos === 1) return 'mt-12 md:mt-24';
-    if (pos === 2) return 'md:-mt-12 lg:-mt-24';
+    if (pos === 2) return index < 3 ? '' : 'md:-mt-12 lg:-mt-24';
     return '';
   };
 
@@ -142,26 +143,10 @@ export default async function SubCategoryPage({
               </div>
           )}
 
-          <div className="mt-32 border-t border-white/5 pt-12 flex flex-col items-center">
-            <p className="text-slate-700 text-[10px] tracking-[0.5em] uppercase font-light mb-4">
-              Project Memories • Archive
-            </p>
-            <div className="w-1 h-1 bg-white/20 rounded-full flex items-center justify-center">
-              <Sparkles className="w-3 h-3 text-white/30" />
-            </div>
-          </div>
+          <GalleryArchiveDivider />
         </main>
 
-        <footer className="px-6 py-12 md:px-20 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
-          <nav className="flex gap-10">
-            <Link href="/" className="text-[10px] tracking-[0.2em] uppercase text-white hover:text-[#C0C0C0]">首頁</Link>
-            <Link href="/gallery" className="text-[10px] tracking-[0.2em] uppercase text-white hover:text-[#C0C0C0]">畫廊</Link>
-            <Link href="#" className="text-[10px] tracking-[0.2em] uppercase text-white hover:text-[#C0C0C0]">設定</Link>
-          </nav>
-          <div className="text-[10px] tracking-[0.2em] uppercase text-slate-500">
-            © 2026 記憶畫廊
-          </div>
-        </footer>
+        <GalleryFooter />
       </div>
     </div>
   );
