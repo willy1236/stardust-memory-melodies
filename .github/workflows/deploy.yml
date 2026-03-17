@@ -18,12 +18,20 @@ jobs:
         env:
           GALLERY_PATH: ${{ secrets.GALLERY_PATH }}
         run: |
+          $ErrorActionPreference = 'Stop'
           echo "Running docker compose command to rebuild and deploy..."
           docker compose -f docker-compose.yml up -d --build nextjs
+          if ($LASTEXITCODE -ne 0) {
+            throw "docker compose failed with exit code $LASTEXITCODE"
+          }
           echo "Deployment completed."
 
       - name: Prune old Docker images
         shell: powershell
         if: always()
         run: |
+          $ErrorActionPreference = 'Stop'
           docker image prune -f
+          if ($LASTEXITCODE -ne 0) {
+            throw "docker image prune failed with exit code $LASTEXITCODE"
+          }
