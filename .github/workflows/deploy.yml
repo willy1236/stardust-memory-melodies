@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build and Restart Docker Compose Service
-        shell: bash
+        shell: pwsh
         env:
           GALLERY_PATH: ${{ secrets.GALLERY_PATH }}
         run: |
@@ -23,7 +23,7 @@ jobs:
           echo "Deployment completed."
 
       - name: Prune old Docker images
-        shell: bash
+        shell: pwsh
         if: always()
         run: |
           docker image prune -f
