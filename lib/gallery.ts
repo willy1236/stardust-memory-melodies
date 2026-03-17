@@ -23,7 +23,7 @@ export async function getGalleryData(): Promise<GalleryData> {
   // Read descriptions from data.json
   let descriptions: { categories?: Record<string, any>, subCategories?: Record<string, string>, series?: Record<string, { title?: string; story?: string; date?: string; location?: string } | string> } = {};
   try {
-    const dataJsonPath = path.join(galleryDir, 'data.json');
+    const dataJsonPath = path.join(process.cwd(), 'data', 'gallery.json');
     const fileContents = await fs.readFile(dataJsonPath, 'utf8');
     descriptions = JSON.parse(fileContents);
   } catch (e) {

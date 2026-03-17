@@ -32,9 +32,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build and Restart Docker Compose Service
+        env:
+          GALLERY_PATH: ${{ secrets.GALLERY_PATH }}
         run: |
           echo "Running docker compose command to rebuild and deploy..."
-          docker compose -f docker-compose.yml up -d --build stardust
+          docker compose -f docker-compose.yml up -d --build nextjs
           echo "Deployment completed."
 
       - name: Prune old Docker images
