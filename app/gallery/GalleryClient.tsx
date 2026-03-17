@@ -112,6 +112,7 @@ export default function GalleryClient({ data }: { data: any }) {
                     fill
                     className="object-cover"
                     referrerPolicy="no-referrer"
+                    loading={index < 12 ? "eager" : "lazy"}
                   />
                 </div>
                 <div className="flex flex-col gap-1 px-2">

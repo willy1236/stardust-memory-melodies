@@ -25,10 +25,10 @@ export default function Home() {
             <main className="flex flex-col">
               <div className="pt-24 pb-16 text-center">
                 <h1 className="text-slate-100 tracking-widest-extra text-5xl md:text-7xl font-extralight leading-tight px-4">
-                  星塵交響曲
+                  星塵回憶曲
                 </h1>
                 <p className="mt-8 text-slate-400 font-light tracking-[0.3em] text-xs uppercase">
-                  Stardust Symphony
+                  Stardust Memories PRJ.
                 </p>
               </div>
 
@@ -52,13 +52,13 @@ export default function Home() {
                   >
                     開始探索
                   </Link>
-                  <button className="flex-1 h-12 border border-white/20 text-white text-xs font-light tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300">
+                  {/* <button className="flex-1 h-12 border border-white/20 text-white text-xs font-light tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300">
                     瞭解更多
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
-              <div className="px-4">
+              {/* <div className="px-4">
                 <div className="pt-4 mb-12">
                   <div className="star-map-line mb-8 opacity-40"></div>
                   <h3 className="text-slate-400 text-xs font-light tracking-[0.3em] uppercase">
@@ -147,12 +147,12 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </main>
 
             <footer className="mt-auto py-12 px-4 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
               <p className="text-[10px] text-slate-600 tracking-widest uppercase">
-                © Project Memories MMXXIV
+                © Stardust Memories PRJ. All rights reserved.
               </p>
               <div className="flex gap-8">
                 <a
@@ -161,7 +161,7 @@ export default function Home() {
                 >
                   Privacy
                 </a>
-                <a
+                {/* <a
                   className="text-[10px] text-slate-600 hover:text-white transition-colors tracking-widest uppercase"
                   href="#"
                 >
@@ -172,7 +172,7 @@ export default function Home() {
                   href="#"
                 >
                   Identity
-                </a>
+                </a> */}
               </div>
             </footer>
           </div>
