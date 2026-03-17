@@ -27,11 +27,99 @@
     "2-3": {
       "name": "指令生存2",
       "coverDescription": "建築生存"
+    },
+    "2-4": {
+      "name": "指令生存3",
+      "coverDescription": "巧克白的生存世界"
+    },
+    "2-5": {
+      "name": "指令生存4",
+      "coverDescription": "海島生存"
+    },
+    "2-6": {
+      "name": "指令生存5",
+      "coverDescription": "一代復刻生存"
+    },
+    "2-7": {
+      "name": "指令生存7",
+      "coverDescription": "槍械指令包生存"
+    },
+    "2-8": {
+      "name": "指令生存8",
+      "coverDescription": "指令包生存，指令的集大成世界"
+    },
+    "2-9": {
+      "name": "指令生存9",
+      "coverDescription": "怪物指令包生存"
+    },
+    "2-10": {
+      "name": "悠閒生存",
+      "coverDescription": "無政府伺服器，沒有規則，只有自由。"
+    },
+    "2-11": {
+      "name": "NEW生存",
+      "coverDescription": "加勒比海帶所開的生存"
+    },
+    "2-12": {
+      "name": "長久生存",
+      "coverDescription": "為目前持續最久的生存，但願能繼續保持下去"
+    },
+    "2-13": {
+      "name": "模組一周目-冒險生存",
+      "coverDescription": "包含暮光森林、拔刀劍、Buildcraft、科技槍械、植物魔法、怪物增強等模組的生存"
+    },
+    "2-14": {
+      "name": "模組二周目-寄生蟲模組",
+      "coverDescription": "包含寄生蟲、失落城市、怪物增強等模組的生存，因地形生成緣故放棄此生存並再開二代"
+    },
+    "2-15": {
+      "name": "模組三周目-寄生蟲模組2",
+      "coverDescription": "包含寄生蟲、怪物增強、家具、更多食物、更多實用工具2、循環等模組的生存，後因拔除寄生蟲模組成為「沒有寄生蟲的寄生蟲模組」"
+    },
+    "2-16": {
+      "name": "模組四周目-new模組生存",
+      "coverDescription": "以模組包 Better MC [FABRIC] - BMC1 作修改後遊玩"
+    },
+    "2-17": {
+      "name": "模組五周目-又新生存",
+      "coverDescription": "又開新模組生存"
+    },
+    "2-18": {
+      "name": "部落生存の世界",
+      "coverDescription": "阿舊部落阿!!!的生存世界"
+    },
+    "2-19": {
+      "name": "模組六周目-寄生蟲模組3",
+      "coverDescription": "將寄生蟲模組的地圖升級至1.16.5並繼續遊玩"
+    },
+    "2-20": {
+      "name": "模組七周目-2024寒假mod",
+      "coverDescription": "以Yes-Steve-Model作為核心，並搭配各項不同類型的模組合成的模組包"
+    },
+    "2-21": {
+      "name": "模組八周目-2024YeeCraft模組包",
+      "coverDescription": "用YeeCraft模組包開的Create模組生存"
+    },
+    "2-22": {
+      "name": "模組九周目-深淵之詩 異夢終途II模組包",
+      "coverDescription": "秉持著暑假的期間限定minecraft熱潮，在B站尋找了整合包遊玩"
+    },
+    "2-23": {
+      "name": "模組十周目-雲層之上模組包",
+      "coverDescription": "空島、飛機、雲層之上的休閒生活"
+    },
+    "2-24": {
+      "name": "模組十一周目-2024寒假又來了模組包",
+      "coverDescription": "2024寒假又來了，帶著create模組的火車，目標是建立龐大的鐵路系統"
+    },
+    "2-25": {
+      "name": "模組十二周目-2024寒假變2026寒假模組包",
+      "coverDescription": "原本的模組包，魔改後結合2024寒假，2026寒假的模組生存將以冒險與鐵路開始"
     }
   },
   "series": {
     "1-1-1": {
-      "title": "快樂營",
+      "title": "快樂營文字歷史",
       "story": "在快樂營的日子裡，我們一起經歷了許多難忘的冒險和挑戰。\n**這是一段關於友誼和成長的記憶。**",
       "date": "2019-08-21",
       "location": "快樂營"
