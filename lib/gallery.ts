@@ -16,6 +16,7 @@ export interface SubCategory {
   name: string;
   coverDescription: string;
   folderName: string;
+  date?: string;
 }
 
 export interface Series {
@@ -48,6 +49,7 @@ interface CategoryMeta {
 interface SubCategoryMeta {
   name?: string;
   coverDescription?: string;
+  date?: string;
 }
 
 interface SeriesMeta {
@@ -79,7 +81,7 @@ export async function getGalleryData(): Promise<GalleryData> {
   // Read descriptions from data.json
   let descriptions: GalleryDescriptions = {};
   try {
-    const dataJsonPath = path.join(process.cwd(), 'data', 'gallery.json');
+    const dataJsonPath = path.join(galleryDir, 'gallery.json');
     const fileContents = await fs.readFile(dataJsonPath, 'utf8');
     descriptions = JSON.parse(fileContents);
   } catch (e) {
@@ -135,7 +137,8 @@ export async function getGalleryData(): Promise<GalleryData> {
           subCategoryId: subCatId, // The simple number requested by user
           name: subCatDesc?.name || subCatName,
           coverDescription,
-          folderName: subCatNameRaw
+          folderName: subCatNameRaw,
+          date: subCatDesc?.date,
         };
 
         const l2Path = path.join(l1Path, l2.name);
@@ -287,6 +290,7 @@ export async function getGalleryData(): Promise<GalleryData> {
         name: subCatName,
         coverDescription,
         folderName: '',
+        date: subCatDesc.date,
       };
 
       // Load series for this subcategory

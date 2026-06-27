@@ -145,6 +145,11 @@ export default function GalleryClient({ data }: { data: GalleryData }) {
                     <h3 className="text-white text-lg font-light tracking-widest leading-snug">
                       {item.name}
                     </h3>
+                    {item.date && (
+                      <p className="text-slate-600 text-[10px] tracking-widest uppercase font-light -mt-2">
+                        {item.date}
+                      </p>
+                    )}
                     <p className="text-slate-600 text-xs font-light leading-relaxed line-clamp-3 mt-auto">
                       {stripMarkdown(truncateAtSecondHeading(item.coverDescription))}
                     </p>
@@ -195,6 +200,11 @@ export default function GalleryClient({ data }: { data: GalleryData }) {
                       <h3 className="text-white text-lg font-light tracking-widest">
                         {item.name}
                       </h3>
+                      {item.date && (
+                        <p className="text-slate-600 text-[10px] tracking-widest uppercase font-light">
+                          {item.date}
+                        </p>
+                      )}
                       <p className="text-slate-600 text-xs italic whitespace-pre-line">
                         {truncateAtSecondHeading(item.coverDescription)}
                       </p>
