@@ -66,7 +66,7 @@ interface GalleryDescriptions {
 }
 
 export async function getGalleryData(): Promise<GalleryData> {
-  const galleryDir = path.join(process.cwd(), 'public', 'gallery');
+  const galleryDir = process.env.GALLERY_PATH ?? path.join(process.cwd(), 'public', 'gallery');
 
   const categories: Record<string, Category> = {};
   const subCategories: Record<string, SubCategory> = {};
@@ -194,13 +194,13 @@ export async function getGalleryData(): Promise<GalleryData> {
                 story: (typeof seriesDesc === 'string' ? seriesDesc : seriesMeta?.story) || "",
                 date: seriesMeta?.date || date,
                 location: seriesMeta?.location || "Unknown",
-                coverImage: `/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`,
+                coverImage: `/api/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`,
                 images: [],
                 mdContent: "",
               };
             }
 
-            seriesMap[globalSeriesId].images.push(`/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`);
+            seriesMap[globalSeriesId].images.push(`/api/gallery/${encodeURIComponent(l1.name)}/${encodeURIComponent(l2.name)}/${encodeURIComponent(fileName)}`);
 
             if (seriesMap[globalSeriesId].date === 'Unknown' && date !== 'Unknown') {
               seriesMap[globalSeriesId].date = date;
